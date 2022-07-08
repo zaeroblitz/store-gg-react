@@ -2,15 +2,17 @@ interface PaymentItemProps {
   type: string;
   bankID: string;
   bankName: string;
+  onChange: () => void;
 }
 
 export default function PaymentItem(props: PaymentItemProps) {
-  const { type, bankID, bankName } = props;
+  const { type, bankID, bankName, onChange } = props;
 
   return (
     <label
       className="col-lg-4 col-sm-6 ps-md-15 pe-md-15 pt-md-15 pb-md-15 pt-10 pb-10"
       htmlFor={bankID}
+      onChange={onChange}
     >
       <input
         className="d-none"

@@ -9,7 +9,7 @@ export default function FeaturedGame() {
   const API_IMG = process.env.NEXT_PUBLIC_IMG;
 
   const getFeaturedGameList = useCallback(async () => {
-    const data = await getFeaturedGame();
+    const { data } = await getFeaturedGame();
     setGameList(data);
   }, [getFeaturedGame]);
 

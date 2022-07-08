@@ -19,10 +19,12 @@ export default function Detail() {
   const [paymentItem, setPaymentItem] = useState([]);
 
   const getVoucherDetailAPI = useCallback(async (id: any) => {
-    const data = await getVoucherDetail(id);
+    const { data } = await getVoucherDetail(id);
     setDataItem(data.detail);
     setNominalItem(data.detail.nominals);
     setPaymentItem(data.payment);
+
+    localStorage.setItem("data-item", JSON.stringify(data.detail));
   }, []);
 
   useEffect(() => {

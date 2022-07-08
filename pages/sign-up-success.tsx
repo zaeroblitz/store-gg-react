@@ -1,4 +1,15 @@
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
 export default function SignUpSuccess() {
+  const router = useRouter();
+
+  useEffect(() => {
+    setTimeout(() => {
+      router.push("/sign-in");
+    }, 1000);
+  }, []);
+
   return (
     <>
       <section className="sign-up-success mx-auto pt-md-179 pb-md-179 pt-150 pb-100">
@@ -190,15 +201,6 @@ export default function SignUpSuccess() {
               <br className="d-sm-block d-none" />
               dan menjadi pemenang!
             </p>
-          </div>
-          <div className="button-group d-flex flex-column mx-auto">
-            <a
-              className="btn btn-top-up fw-medium text-lg text-white rounded-pill"
-              href="../index.html"
-              role="button"
-            >
-              Top Up
-            </a>
           </div>
         </div>
       </section>

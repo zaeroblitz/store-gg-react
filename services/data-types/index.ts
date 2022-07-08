@@ -31,3 +31,29 @@ export interface NominalTypes {
   coinQuantity: number;
   price: number;
 }
+
+export interface SignInTypes {
+  email: string;
+  password: string;
+}
+
+export interface UserPayloadTypes {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  avatar: string;
+}
+
+export interface JWTPayloadTypes {
+  player: UserPayloadTypes;
+  iat: number;
+}
+export interface CheckoutTypes {
+  accountUser: string;
+  name: string;
+  nominal: string;
+  voucher: string;
+  payment: string;
+  bank: string;
+}

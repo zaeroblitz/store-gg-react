@@ -1,12 +1,41 @@
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import jwt_decode from "jwt-decode";
+import {
+  JWTPayloadTypes,
+  UserPayloadTypes,
+} from "../../../services/data-types";
+import { useRouter } from "next/router";
 
-interface AuthProps {
-  isLogin: boolean;
-}
+export default function Auth() {
+  const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState({
+    avatar: "",
+    name: "",
+  });
+  const router = useRouter();
 
-export default function Auth(props: Partial<AuthProps>) {
-  const { isLogin } = props;
+  useEffect(() => {
+    const token = Cookies.get("token");
+
+    if (token) {
+      const jwt = atob(token);
+      const jwt_payload: JWTPayloadTypes = jwt_decode(jwt);
+      const player: UserPayloadTypes = jwt_payload.player;
+      const IMG_PATH = process.env.NEXT_PUBLIC_IMG;
+      player.avatar = `${IMG_PATH}/${player.avatar}`;
+      setUser(player);
+      setIsLogin(true);
+    }
+  }, []);
+
+  const onLogout = () => {
+    Cookies.remove("token");
+    router.push("/");
+    setIsLogin(false);
+  };
 
   if (isLogin) {
     return (
@@ -21,8 +50,8 @@ export default function Auth(props: Partial<AuthProps>) {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <Image
-              src="/img/avatar-1.png"
+            <img
+              src={user.avatar}
               className="rounded-circle"
               width={40}
               height={40}
@@ -53,10 +82,8 @@ export default function Auth(props: Partial<AuthProps>) {
                 </a>
               </Link>
             </li>
-            <li>
-              <Link href="/sign-in">
-                <a className="dropdown-item text-lg color-palette-2">Log Out</a>
-              </Link>
+            <li onClick={onLogout}>
+              <a className="dropdown-item text-lg color-palette-2">Log Out</a>
             </li>
           </ul>
         </div>
