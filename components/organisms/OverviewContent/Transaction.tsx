@@ -1,6 +1,57 @@
+import { useCallback, useEffect, useState } from "react";
+import { getMemberOverview } from "../../../services/member";
 import TransactionItem from "./TransactionItem";
+import { toast } from "react-toastify";
+
+interface TransactionItemTypes {
+  _id: string;
+  historyVoucherTopup: {
+    gameName: string;
+    coinName: string;
+    coinQuantity: string;
+    thumbnail: string;
+    price: number;
+  };
+  category: {
+    name: string;
+  };
+  status: "pending" | "success" | "failed";
+  value: number;
+}
 
 export default function Transaction() {
+  const [data, setData] = useState([]);
+
+  const getDataFromAPI = useCallback(async () => {
+    const response = await getMemberOverview();
+    if (response.error) {
+      toast.error(response.message);
+    }
+
+    const transctionData = response.data.data;
+    setData(transctionData);
+  }, [getMemberOverview]);
+
+  useEffect(() => {
+    getDataFromAPI();
+  }, []);
+
+  const renderedTransactionItem = () => {
+    return data.map((item: TransactionItemTypes) => (
+      <TransactionItem
+        key={item._id}
+        title={item.historyVoucherTopup.gameName}
+        category={item.category.name}
+        item={`${item.historyVoucherTopup.coinQuantity} ${item.historyVoucherTopup.coinName}`}
+        price={item.value}
+        status={item.status}
+        image={`${IMG_PATH}/${item.historyVoucherTopup.thumbnail}`}
+      />
+    ));
+  };
+
+  const IMG_PATH = process.env.NEXT_PUBLIC_IMG;
+
   return (
     <div className="latest-transaction">
       <p className="text-lg fw-medium color-palette-1 mb-14">
@@ -18,40 +69,7 @@ export default function Transaction() {
               <th scope="col">Status</th>
             </tr>
           </thead>
-          <tbody>
-            <TransactionItem
-              title="Mobile Legend"
-              category="Mobile"
-              item={200}
-              price={290000}
-              status="Pending"
-              image="overview-1"
-            />
-            <TransactionItem
-              title="Call of Duty Mobile"
-              category="Mobile"
-              item={550}
-              price={740000}
-              status="Success"
-              image="overview-2"
-            />
-            <TransactionItem
-              title="Clash of Clans"
-              category="Mobile"
-              item={100}
-              price={100000}
-              status="Failed"
-              image="overview-3"
-            />
-            <TransactionItem
-              title="Valorant"
-              category="Dekstop"
-              item={225}
-              price={200000}
-              status="Pending"
-              image="overview-4"
-            />
-          </tbody>
+          <tbody>{renderedTransactionItem()}</tbody>
         </table>
       </div>
     </div>

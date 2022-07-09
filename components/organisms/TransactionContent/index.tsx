@@ -1,7 +1,72 @@
+import { useCallback, useEffect, useState } from "react";
+import { getMemberTransactions } from "../../../services/member";
+import { toast } from "react-toastify";
 import ButtonTab from "./ButtonTab";
 import TableRow from "./TableRow";
+import NumberFormat from "react-number-format";
+
+interface TransactionItemTypes {
+  _id: string;
+  historyVoucherTopup: {
+    gameName: string;
+    coinName: string;
+    coinQuantity: string;
+    thumbnail: string;
+    price: number;
+  };
+  category: {
+    name: string;
+  };
+  status: "pending" | "success" | "failed";
+  value: number;
+}
 
 export default function TransactionContent() {
+  const [total, setTotal] = useState(0);
+  const [data, setData] = useState([]);
+  const [tab, setTab] = useState("all");
+  const IMG_PATH = process.env.NEXT_PUBLIC_IMG;
+
+  const getDataFromAPI = useCallback(
+    async (value) => {
+      const response = await getMemberTransactions(value);
+      if (response.error) {
+        toast.error(response.message);
+      }
+
+      const totalTransaction = response.data.total;
+      const dataTransaction = response.data.data;
+
+      setTotal(totalTransaction);
+      setData(dataTransaction);
+    },
+    [getMemberTransactions]
+  );
+
+  useEffect(() => {
+    getDataFromAPI("all");
+  }, []);
+
+  const onTabClick = (value) => {
+    setTab(value);
+    getDataFromAPI(value);
+  };
+
+  const renderedTransactionItem = () => {
+    return data.map((item: TransactionItemTypes) => (
+      <TableRow
+        key={item._id}
+        title={item.historyVoucherTopup.gameName}
+        category={item.category.name}
+        item={`${item.historyVoucherTopup.coinQuantity} ${item.historyVoucherTopup.coinName}`}
+        price={item.value}
+        status={item.status}
+        image={`${IMG_PATH}/${item.historyVoucherTopup.thumbnail}`}
+        id={item._id}
+      />
+    ));
+  };
+
   return (
     <main className="main-wrapper">
       <div className="ps-lg-0">
@@ -11,16 +76,38 @@ export default function TransactionContent() {
         <div className="mb-30">
           <p className="text-lg color-palette-2 mb-12">You’ve spent</p>
           <h3 className="text-5xl fw-medium color-palette-1">
-            Rp 4.518.000.500
+            <NumberFormat
+              value={total}
+              prefix="Rp "
+              displayType="text"
+              decimalSeparator=","
+              thousandSeparator="."
+            />
           </h3>
         </div>
         <div className="row mt-30 mb-20">
           <div className="col-lg-12 col-12 main-content">
             <div id="list_status_title">
-              <ButtonTab title="All Trx" active />
-              <ButtonTab title="Success" />
-              <ButtonTab title="Pending" />
-              <ButtonTab title="Failed" />
+              <ButtonTab
+                onClick={() => onTabClick("all")}
+                title="All Trx"
+                active={tab === "all"}
+              />
+              <ButtonTab
+                onClick={() => onTabClick("success")}
+                title="Success"
+                active={tab === "success"}
+              />
+              <ButtonTab
+                onClick={() => onTabClick("pending")}
+                title="Pending"
+                active={tab === "pending"}
+              />
+              <ButtonTab
+                onClick={() => onTabClick("failed")}
+                title="Failed"
+                active={tab === "failed"}
+              />
             </div>
           </div>
         </div>
@@ -41,40 +128,7 @@ export default function TransactionContent() {
                   <th scope="col">Action</th>
                 </tr>
               </thead>
-              <tbody id="list_status_item">
-                <TableRow
-                  title="Mobile Legends: The New Battle 2021"
-                  category="Desktop"
-                  item={200}
-                  price={29000}
-                  status="Pending"
-                  image="overview-1"
-                />
-                <TableRow
-                  title="Mobile Legends: The New Battle 2021"
-                  category="Desktop"
-                  item={200}
-                  price={29000}
-                  status="Failed"
-                  image="overview-2"
-                />
-                <TableRow
-                  title="Mobile Legends: The New Battle 2021"
-                  category="Desktop"
-                  item={200}
-                  price={29000}
-                  status="Success"
-                  image="overview-3"
-                />
-                <TableRow
-                  title="Mobile Legends: The New Battle 2021"
-                  category="Desktop"
-                  item={200}
-                  price={29000}
-                  status="Pending"
-                  image="overview-4"
-                />
-              </tbody>
+              <tbody id="list_status_item">{renderedTransactionItem()}</tbody>
             </table>
           </div>
         </div>

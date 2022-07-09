@@ -2,7 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["zaerolabs-store-gg.herokuapp.com/uploads/"],
+    domains: [
+      "zaerolabs-store-gg.herokuapp.com",
+      "zaerolabs-store-gg.herokuapp.com/uploads/",
+    ],
   },
 };
 

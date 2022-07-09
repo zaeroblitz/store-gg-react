@@ -1,4 +1,5 @@
 import Image from "next/image";
+import NumberFormat from "react-number-format";
 
 interface TopUpItemProps {
   title: string;
@@ -22,7 +23,15 @@ export default function TopUpItem(props: TopUpItemProps) {
         </div>
         <div>
           <p className="text-sm color-palette-2 mb-1">Total Spent</p>
-          <p className="text-2xl color-palette-1 fw-medium m-0">Rp {spent}</p>
+          <p className="text-2xl color-palette-1 fw-medium m-0">
+            <NumberFormat
+              value={spent}
+              prefix="Rp "
+              displayType="text"
+              decimalSeparator=","
+              thousandSeparator="."
+            />
+          </p>
         </div>
       </div>
     </div>
