@@ -46,3 +46,15 @@ export const getMemberTransactionDetail = async (id: string, token: string) => {
     serverToken: token,
   });
 };
+
+export const putPlayerProfile = async (data) => {
+  const ENDPOINT = `players/profile`;
+  const url = `${ROOT_API}/${API_VERSION}/${ENDPOINT}`;
+
+  return await callAPI({
+    url,
+    method: "PUT",
+    data,
+    token: true,
+  });
+};
